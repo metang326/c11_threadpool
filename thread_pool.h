@@ -97,7 +97,7 @@ public:
                 this->cond.wait(lk);
             }
             this->tasks.push(t);
-            this->cond.notify_all();
+            this->cond.notify_one();
         }
     }
 };
