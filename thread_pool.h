@@ -86,6 +86,7 @@ public:
 
             }
         }
+        this->threads.clear();
         cout << "[✔] delete ThreadPool finished!" << endl;
     }
 
