@@ -49,9 +49,9 @@ public:
             Task cur_task;
             cur_task = this->tasks.front();
             this->tasks.pop();
+            this->cond.notify_one();
             int task_id = cur_task();
             this->count[task_id] = cur_thread_id;
-            this->cond.notify_one();
         }
     }
 
