@@ -98,8 +98,8 @@ void work() {
             Task cur_task;
             cur_task = tasks.front();
             tasks.pop();
-            int task_id=cur_task();
             cond.notify_one();
+            int task_id=cur_task();
         }
     }
 ```
@@ -119,8 +119,8 @@ void work() {
             Task cur_task;
             cur_task = tasks.front();
             tasks.pop();
-            int task_id=cur_task();
             cond.notify_one();
+            int task_id=cur_task();
         }
     }
 ```
@@ -191,8 +191,8 @@ void work() {
             Task cur_task;
             cur_task = tasks.front();
             tasks.pop();
-            cur_task();
             cond.notify_one();
+            cur_task();
         }
     }
 ```
@@ -241,8 +241,8 @@ void work() {
         Task cur_task;
         cur_task = tasks.front();
         tasks.pop();
-        cur_task();
         cond.notify_one();
+        cur_task();
     }
 }
 ```
