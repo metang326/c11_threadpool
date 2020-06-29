@@ -131,7 +131,7 @@ void work() {
 
 - 当任务全部执行结束，此时tasks.empty()=true，所以线程们会陷入sleep，等到有新的任务加入时才被唤醒。
 - 当我们关闭线程池的时候，会把is_working=false，并且发出cond.notify_all();来把所有的睡眠状态线程都唤醒，唤醒后的线程才可以join。
-- 然而，当之前陷入睡眠的线程虽然因为notify_all()被唤醒了，但还是会因为tasks.empty()=true再次陷入睡眠，这时已经不会再有人来唤醒它们了，因此导致所有的线程都无法被join。
+- 然而，当之前陷入睡眠的线程虽然因为notify_all()被唤醒了，**但还是会因为tasks.empty()=true再次陷入睡眠，这时已经不会再有人来唤醒它们了，因此导致所有的线程都无法被join。**
 - 这些无法被唤醒的线程，还是处于**之前的is_working=true的睡眠过程中**，所以无法进入is_working=false的那次循环。
 
 ```
