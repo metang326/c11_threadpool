@@ -80,6 +80,37 @@ int main(int argc, char *argv[]) {
 ```
 
 ## 编码过程的思考
+### 0. notify_one的唤醒对象
+- 工作线程陷入睡眠的条件：任务队列为空；
+- 增加任务的主线程陷入睡眠的条件：任务队列满了。
+
+**虚假唤醒现象**
+
+当任务数量很少的情况下，例如有10个工作线程，但一共只有5个任务，那么领取到这5个任务的工作线程，完成任务之后，唤醒对象并不是主线程（因为主线程已经把自己需要添加的5个任务都放进队列了，没有陷入睡眠），唤醒对象是没有领到任务的工作线程。
+
+把代码中增加一些输出可以看出来，task4是最后一个任务，执行完毕后还有5个线程被唤醒了，**但这是一种虚假的唤醒，因为任务队列依然是空的，所以工作线程仍然会陷入睡眠**。只有来自主线程的唤醒对工作线程才是有效的，说明又有新任务可以领取了。
+```
+[-] task 3 working in thread 0x70000cbe5000
+0x70000cbe5000 going to notify_one
+[-] task 4 working in thread 0x70000cbe5000
+0x70000cd6e000 was wanken up to work
+0x70000cd6e000 thread going to sleep
+0x70000cceb000 was wanken up to work
+0x70000cceb000 thread going to sleep
+0x70000cdf1000 was wanken up to work
+0x70000cdf1000 thread going to sleep
+0x70000cc68000 was wanken up to work
+0x70000cc68000 thread going to sleep
+0x70000ce74000 was wanken up to work
+0x70000ce74000 thread going to sleep
+0x70000cbe5000 thread going to sleep
+```
+
+但既然使用线程池，那么任务数少于线程数这种情况其实不太合理了，说明有多余线程。
+
+一般情况下，任务数量是会更多的，因为我们设置线程池就是为了让工作线程能够被循环使用，一直保持忙碌状态，干完活之后再去领取任务。
+
+增加任务的工作，其实执行起来是更快的，只需要在主线程把任务的函数地址、参数加入队列，一个简单的append操作，所以主线程增加任务的速度是比工作线程完成任务的速度更快的，往往是主线程把任务加满了，没有空闲的工作线程来干活。**工作线程=程序员，主线程=PM，任务=需求**
 
 ### 1. 退出时无法join线程，问题排查
 
